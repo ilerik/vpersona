@@ -1,5 +1,6 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+//import TwitterProvider from "next-auth/providers/twitter";
+import FacebookProvider from "next-auth/providers/facebook";
 
 import { env } from "../../../env/server.mjs";
 
@@ -15,9 +16,14 @@ export const authOptions: NextAuthOptions = {
   },
   // Configure one or more authentication providers
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    // TwitterProvider({
+    //   clientId: env.TWITTER_ID,
+    //   clientSecret: env.TWITTER_SECRET,
+    //   version: "2.0", // opt-in to Twitter OAuth 2.0
+    // }),
+    FacebookProvider({
+      clientId: env.FACEBOOK_CLIENT_ID,
+      clientSecret: env.FACEBOOK_CLIENT_SECRET,
     }),
     // ...add more providers here
   ],
