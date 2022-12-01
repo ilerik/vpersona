@@ -1,18 +1,21 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { setupModal } from "@near-wallet-selector/modal-ui";
 
 import { trpc } from "../utils/trpc";
 
 import { providers, utils } from "near-api-js";
-import type {
-  AccountView,
-  CodeResult,
-} from "near-api-js/lib/providers/provider";
+import type { AccountView } from "near-api-js/lib/providers/provider";
 import { useWalletSelector } from "../contexts/WalletSelectorContext";
 import { useCallback, useEffect, useState } from "react";
+
+import { atom, useAtom } from "jotai";
+import { setupWalletSelector } from "@near-wallet-selector/core";
+import { setupDefaultWallets } from "@near-wallet-selector/default-wallets";
+import { setupModal } from "@near-wallet-selector/modal-ui";
+import type { WalletSelector, AccountState } from "@near-wallet-selector/core";
+import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
+import { KEYPOM_CONTRACT_ID, SOCIAL_CONTRACT_ID } from "../constants";
 
 type Account = AccountView & {
   account_id: string;
@@ -25,6 +28,13 @@ const Home: NextPage = () => {
   const { selector, modal, accounts, accountId } = useWalletSelector();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  // const modalAtom = atom(
+  //   setupModal(selector, {
+  //     contractId: KEYPOM_CONTRACT_ID,
+  //   })
+  // );
+  // const [modalKeypom, setModalKeypom] = useAtom(modalAtom);
 
   const getAccount = useCallback(async (): Promise<Account | null> => {
     if (!accountId) {
@@ -63,11 +73,48 @@ const Home: NextPage = () => {
     modal.show();
   };
 
-  const handleSignIn2 = () => {
-    const _modal = setupModal(selector, {
-      contractId: "dev-1669748907656-14573021245791",
+  const handleAuthorize = async () => {
+    const wallet = await selector.wallet();
+    //
+    //wallet.signIn;
+    await wallet.signAndSendTransaction({
+      signerId: accountId!,
+      receiverId: KEYPOM_CONTRACT_ID,
+      actions: [
+        {
+          type: "FunctionCall",
+          params: {
+            //methodName: "addMessage",
+            methodName: "get_key_total_supply",
+            //args: { text: "Hello World!" },
+            args: {},
+            gas: "30000000000000",
+            deposit: "10000000000000000000000",
+          },
+        },
+      ],
     });
-    _modal.show();
+  };
+
+  const handleCreateSocialProfile = async () => {
+    const wallet = await selector.wallet();
+    const data = { [accountId!]: "vself" };
+    console.log(data);
+    wallet.signAndSendTransaction({
+      signerId: accountId!,
+      receiverId: SOCIAL_CONTRACT_ID,
+      actions: [
+        {
+          type: "FunctionCall",
+          params: {
+            methodName: "set",
+            args: { data },
+            gas: "30000000000000",
+            deposit: "100000000000000000000000",
+          },
+        },
+      ],
+    });
   };
 
   const handleSignOut = async () => {
@@ -118,12 +165,12 @@ const Home: NextPage = () => {
         <meta name="description" content="vPersona" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+      <main className="align-center flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <div className="align-center container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            HACK IN PROGRESS{" "}
-            <span className="text-[hsl(280,100%,70%)]">vPersona</span>{" "}
+            <span className="text-[hsl(280,100%,70%)]">vPersona</span>
           </h1>
+          HACK IN PROGRESS
           <div className="flex flex-col items-center gap-2 text-white">
             {loading ? (
               <>Loading Wallet Selector</>
@@ -135,7 +182,10 @@ const Home: NextPage = () => {
                   </>
                 ) : (
                   <>
-                    <button onClick={handleSignIn2}>Authorize</button>
+                    <button onClick={handleCreateSocialProfile}>
+                      Create NEAR.Social Profile
+                    </button>
+                    <button onClick={handleAuthorize}>Authorize Keypom</button>
                     <button onClick={handleSignOut}>Log out</button>
                     <button onClick={handleSwitchWallet}>Switch Wallet</button>
                     <button onClick={handleVerifyOwner}>Verify Owner</button>
