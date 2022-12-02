@@ -9,12 +9,6 @@ import type { AccountView } from "near-api-js/lib/providers/provider";
 import { useWalletSelector } from "../contexts/WalletSelectorContext";
 import { useCallback, useEffect, useState } from "react";
 
-import { atom, useAtom } from "jotai";
-import { setupWalletSelector } from "@near-wallet-selector/core";
-import { setupDefaultWallets } from "@near-wallet-selector/default-wallets";
-import { setupModal } from "@near-wallet-selector/modal-ui";
-import type { WalletSelector, AccountState } from "@near-wallet-selector/core";
-import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
 import { KEYPOM_CONTRACT_ID, SOCIAL_CONTRACT_ID } from "../constants";
 
 type Account = AccountView & {
@@ -28,13 +22,6 @@ const Home: NextPage = () => {
   const { selector, modal, accounts, accountId } = useWalletSelector();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-
-  // const modalAtom = atom(
-  //   setupModal(selector, {
-  //     contractId: KEYPOM_CONTRACT_ID,
-  //   })
-  // );
-  // const [modalKeypom, setModalKeypom] = useAtom(modalAtom);
 
   const getAccount = useCallback(async (): Promise<Account | null> => {
     if (!accountId) {
