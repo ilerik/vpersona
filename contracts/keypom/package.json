@@ -1,0 +1,39 @@
+{
+	"name": "near-proxy-linkdrop-contract",
+	"version": "1.0.0",
+	"license": "MIT",
+	"author": "Ben Kurrek, Matt Lockyer",
+	"scripts": {
+		"pub-docs": "rm -rf doc && mkdir doc && cargo doc --no-deps && cp -r target/doc/* doc && gh-pages -d doc",
+		"dev-deploy": "echo building contract && yarn build-contract && echo removing neardev && rm -rf neardev && echo deploying && (near dev-deploy --wasmFile out/keypom.wasm || exit 0)",
+		"build-contract": "./build.sh",
+		"simple": "node deploy/simple/simple-create",
+		"ft": "node deploy/ft/ft-create",
+		"nft": "node deploy/nft/nft-create",
+		"fc": "node deploy/function-call/fc-create",
+		"test": "yarn test:internals && yarn test:stage1 && yarn test:ticketing && yarn test:poaps && yarn test:configs && yarn test:nft-drops && yarn test:ft-drops && yarn test:passwords",
+		"test:internals": "ava __tests__/internals/test-internals.ava.ts",
+		"test:stage1": "yarn test:stage1:simple",
+		"test:stage1:simple": "ava __tests__/stage1/test-simple.ava.ts",
+		"test:ticketing": "ava __tests__/ticketing/ticketing-tests.ava.ts",
+		"test:poaps": "ava __tests__/poaps/poap-tests.ava.ts",
+		"test:configs": "ava __tests__/config-tests/config-tests.ava.ts",
+		"test:nft-drops": "ava __tests__/nft-drops/nft-drops.ava.ts",
+		"test:ft-drops": "ava __tests__/ft-drops/ft-drops.ava.ts",
+		"test:profiling": "ava __tests__/profiling/profiling.ava.ts",
+		"test:passwords": "ava __tests__/passwords/password-tests.ava.ts"
+	},
+	"dependencies": {
+		"crypto": "^1.0.1",
+		"gh-pages": "^4.0.0",
+		"keypom-js": "^0.0.2"
+	},
+	"devDependencies": {
+		"@types/bn.js": "^5.1.0",
+		"ava": "^5.0.1",
+		"near-api-js": "^0.44.2",
+		"near-workspaces": "3.2.2",
+		"ts-node": "^10.8.0",
+		"typescript": "^4.6.4"
+	}
+}
