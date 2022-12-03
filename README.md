@@ -1,5 +1,40 @@
+# **vRanda**
+
+### Task #6 Web3 social networks, integration with DAO
+
+vRanda is a user-friendly Web3 profile for decentralized social networks.
+
+All the user personal data stores in Social DB. [[https://github.com/NearSocial/social-db/](https://github.com/NearSocial/social-db/)]
+
+vRanda has Web2.5 -oriented design to facilitate mass adoption.
+
+We use The Graph Protocol NEAR & Social DB subgraphs for indexing and search. [[https://thegraph.com/en/](https://thegraph.com/en/)]
+
+The user can add:
+
+- Name & bio
+- Avatar picture
+- Portfolio links
+- NEAR NFTs
+- Subscriptions (NEAR IDs)
+
+Structure:
+
+- Front
+- The Graph Protocol NEAR subgraph for NFTs indexing by user NEAR id
+- The Graph Protocol Social DB subgraph for users indexing by user NEAR id
+
+In the vRanda profiles, users can create a Web3 profile, manage their personal data and choose which information they want to disclose. vRanda stores the user's personal data on-chain in Social DB. All the listed information is saved according to the authorized user's NEAR ID.
+
+Any user’s profile is available to everyone on her public page. The address of this public page contains the user's NEAR ID. Therefore, the data from Social DB is retrieved to the dynamic page according to the current NEAR ID.
+
+Using NEAR Explorer to import profile data might be confusing, especially if we address Web2 users. For this reason, we provide a simple process of NFT import. There is no need to provide a NEAR contact address or NFT ID. All the NFTs will be loaded automatically according to the user's NEAR ID. We use The Graph Protocol to set up a NEAR subgraph to accomplish this goal. It is used to index all NFTs owned by a given user.
+
+Also, we use The Graph Protocol to index Social DB by user NEAR ID. It is used to provide the information about given user to her public page.
+
 # MVP Deployment
 
+1. Web application on Vercel https://vpersona.vercel.app
 1. Subgraph for Near.Social https://thegraph.com/hosted-service/subgraph/ilerik/near-social
 
 # Create T3 App
