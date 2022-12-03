@@ -46,14 +46,18 @@ const Header: React.FC = () => {
   }, [accountId, selector.options]);
 
   const handleSignIn = async () => {
-    modal.show();
-    setTimeout(() => {
-      const middleBtn: any = document.querySelector(".middleButton");
-      middleBtn.onclick = () => {
-        modal.hide();
-        router.push("/onboard");
-      };
-    }, 0);
+    try {
+      modal.show();
+      setTimeout(() => {
+        const middleBtn: any = document.querySelector(".middleButton");
+        middleBtn.onclick = () => {
+          modal.hide();
+          router.push("/onboard");
+        };
+      }, 0);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleSignOut = useCallback(async () => {

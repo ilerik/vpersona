@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 import { trpc } from "../utils/trpc";
 
@@ -17,6 +18,7 @@ type Account = AccountView & {
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+  const router = useRouter();
 
   // Wallet selector state management
   const { selector, modal, accounts, accountId } = useWalletSelector();
@@ -102,6 +104,10 @@ const Home: NextPage = () => {
     });
   };
 
+  const goToProfilePage = () => {
+    router.push("/profile");
+  }
+
   const handleSignOut = async () => {
     const wallet = await selector.wallet();
 
@@ -155,7 +161,7 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             <span className="text-[hsl(280,100%,70%)]">vPersona</span>
           </h1>
-          HACK IN PROGRESS
+          <p className="tracking-tight text-white sm:text-[1rem]">HACK IN PROGRESS</p>
           <div className="flex flex-col items-center gap-2 text-white">
             {loading ? (
               <>Loading Wallet Selector</>
@@ -163,22 +169,22 @@ const Home: NextPage = () => {
               <>
                 {!account ? (
                   <>
-                    <button onClick={handleSignIn}>Log in</button>
+                    <p className="tracking-tight text-white">Please, sign in</p>
                   </>
                 ) : (
                   <>
-                    <button onClick={handleCreateSocialProfile}>
+                    <button onClick={goToProfilePage}>
                       Create NEAR.Social Profile
                     </button>
-                    <button onClick={handleAuthorize}>Authorize Keypom</button>
                     <button onClick={handleSignOut}>Log out</button>
+                    {/* <button onClick={handleAuthorize}>Authorize Keypom</button>
                     <button onClick={handleSwitchWallet}>Switch Wallet</button>
                     <button onClick={handleVerifyOwner}>Verify Owner</button>
                     {accounts.length > 1 && (
                       <button onClick={handleSwitchAccount}>
                         Switch Account
                       </button>
-                    )}
+                    )} */}
                   </>
                 )}
               </>

@@ -245,12 +245,12 @@ const ProfilePage: NextPage = () => {
         <h2 className="mb-2 font-drukMedium text-black">
           Your changes has been applied
         </h2>
-        {/* <p className="text-[#3D3D3D] mb-4">
+        <p className="text-[#3D3D3D] mb-4">
           You can see your changes on your{' '}
           <a className="underline text-[#019FFF] hover:no-underline" href={`/linktree/${accountId}`}>
             profile page
           </a>
-        </p> */}
+        </p>
       </Modal>
       <Modal isOpened={isError} isError={isError} closeCallback={closeModal}>
         <ErrorCreateMessage />
