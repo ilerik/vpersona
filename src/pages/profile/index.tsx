@@ -19,6 +19,7 @@ import { useWalletSelector } from '../../contexts/WalletSelectorContext';
 import ErrorCreateMessage from '../../features/event-form/error-create';
 import Loader from '../../components/loader';
 import NotAuthorizedBlock from '../../components/not-authorized';
+import { KEYPOM_CONTRACT_ID, SOCIAL_CONTRACT_ID } from "../../constants";
 
 type resultLink = {
   [key: string]: string;
@@ -51,7 +52,9 @@ const ProfilePage: NextPage = () => {
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [avatar, setAvatar] = useState<File | null>(null);
 
-  const { accountId } = useWalletSelector();
+  const [nftsData, setNftsData] = useState<object>({});
+
+  const { accountId, selector } = useWalletSelector();
 
   useEffect(() => {
     const initProfile = async () => {
@@ -69,7 +72,8 @@ const ProfilePage: NextPage = () => {
     initProfile();
   }, [accountId]);
 
-  const submitLinkTreeForm = (event: React.FormEvent<HTMLFormElement>): void => {
+  const submitLinkTreeForm = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    console.log("Save changes");
     event.preventDefault();
     try {
       setIsLoading(true);
@@ -78,11 +82,35 @@ const ProfilePage: NextPage = () => {
       }
       // Adding new document to Firestore collection of users
       if (avatar) {
+        console.log(avatar);
+        const avatar_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
         // TODO Upload image
         // uploadImageToFirebase(avatar).then((url) => {
         //   addDocToFirestoreWithName('users', String(accountId), { ...formState, avatar: url });
         // });
         // setAnalyticsUserProperties({ avatar: 'changed' });
+
+        // Save in blockchain
+        const wallet = await selector.wallet();
+        const data = { [accountId!]: {
+          vself: {avatar_url}
+        } };
+        console.log(data);
+        wallet.signAndSendTransaction({
+          signerId: accountId!,
+          receiverId: SOCIAL_CONTRACT_ID,
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "set",
+                args: { data },
+                gas: "30000000000000",
+                deposit: "100000000000000000000000",
+              },
+            },
+          ],
+        });
         return;
       }
       // TODO write updated user data
