@@ -1,10 +1,30 @@
-import { initializeApp } from 'firebase/app';
-import { getPerformance } from 'firebase/performance';
-import { getStorage } from 'firebase/storage';
-import { addDoc, doc, collection, getFirestore, query, where, getDocs, setDoc, getDoc } from 'firebase/firestore';
-import { getAnalytics, isSupported, setUserProperties, logEvent } from 'firebase/analytics';
-import { ref, uploadBytesResumable, getDownloadURL, listAll } from 'firebase/storage';
-import { sha3_256 } from 'js-sha3';
+import { initializeApp } from "firebase/app";
+import { getPerformance } from "firebase/performance";
+import { getStorage } from "firebase/storage";
+import {
+  addDoc,
+  doc,
+  collection,
+  getFirestore,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  getDoc,
+} from "firebase/firestore";
+import {
+  getAnalytics,
+  isSupported,
+  setUserProperties,
+  logEvent,
+} from "firebase/analytics";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  listAll,
+} from "firebase/storage";
+import { sha3_256 } from "js-sha3";
 
 // Set the configuration for your app
 // TODO: Replace with your app's config object
@@ -46,14 +66,14 @@ export const logFirebaseEvent = async (eventName: string, event: object) => {
 
 // Initialize Performance Monitoring and get a reference to the service
 let perf = null;
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   perf = getPerformance(firebaseApp);
 }
 
 export const uploadImageToFirebase = async (file: File): Promise<unknown> => {
   const arrayBuffer = await file.arrayBuffer();
   const hash = sha3_256(arrayBuffer);
-  const fileExt = file.name.split('.').pop();
+  const fileExt = file.name.split(".").pop();
   const storageRef = ref(storage, `images/${hash}.${fileExt}`);
   const uploadTask = uploadBytesResumable(storageRef, file);
   return uploadTask.then(() => {
@@ -62,7 +82,7 @@ export const uploadImageToFirebase = async (file: File): Promise<unknown> => {
 };
 
 export const renderFirebaseImage = async (hash: string): Promise<string> => {
-  const listRef = ref(storage, 'images/');
+  const listRef = ref(storage, "images/");
   let url;
   // const result = await storageRef.listAll();
   const result = await listAll(listRef);
@@ -73,16 +93,22 @@ export const renderFirebaseImage = async (hash: string): Promise<string> => {
     // All the items under listRef.
     getImageUrl(itemRef);
   });
-  return '/0.png';
+  return "/0.png";
 };
 
 export const addDocToFirestore = async (collectionName: string, data: object) =>
   await addDoc(collection(db, collectionName), data);
 
-export const addDocToFirestoreWithName = async (collectionName: string, docName: string, data: object) =>
-  await setDoc(doc(db, collectionName, docName), data);
+export const addDocToFirestoreWithName = async (
+  collectionName: string,
+  docName: string,
+  data: object
+) => await setDoc(doc(db, collectionName, docName), data);
 
-export const getDocFromFirebase = async (collectionName: string, docName: string) => {
+export const getDocFromFirebase = async (
+  collectionName: string,
+  docName: string
+) => {
   try {
     const docRef = doc(db, collectionName, docName);
     const docSnap = await getDoc(docRef);
@@ -98,8 +124,8 @@ export const getDocFromFirebase = async (collectionName: string, docName: string
   }
 };
 export const isRewardAddedToFirestore = async (wallet: string) => {
-  const particpantsCollection = collection(db, 'participants');
-  const q = query(particpantsCollection, where('wallet', '==', wallet));
+  const particpantsCollection = collection(db, "participants");
+  const q = query(particpantsCollection, where("wallet", "==", wallet));
   const querySnapshot = await getDocs(q);
   if (!querySnapshot.empty) {
     return true;
