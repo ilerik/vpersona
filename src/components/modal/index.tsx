@@ -1,6 +1,7 @@
 import React from "react";
 
 interface ModalProps {
+  children?: any,
   title?: string;
   closeCallback?: () => void;
   secondCallback?: () => void;
@@ -53,7 +54,7 @@ const Modal: React.FC<ModalProps> = ({
       aria-modal={true}
       style={{
         position: "fixed",
-        zIndex: 9999999999999999,
+        zIndex: 999,
         background: "rgba(0,0,0,0.6)",
       }}
     >

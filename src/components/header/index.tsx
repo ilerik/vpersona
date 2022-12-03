@@ -7,7 +7,6 @@ import HeaderSettingsButton from "./settings-button";
 import { useWalletSelector } from "../../contexts/WalletSelectorContext";
 import type { Account } from "near-api-js";
 import { providers } from "near-api-js";
-import { getDocFromFirebase } from "../../utils/firebase";
 import BurgerMenuIcon from "../icons/BurgerMenuIcon";
 import DropdownMenu from "./dropdown-menu";
 
