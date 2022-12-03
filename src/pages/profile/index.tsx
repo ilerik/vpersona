@@ -20,6 +20,17 @@ import ErrorCreateMessage from "../../features/event-form/error-create";
 import Loader from "../../components/loader";
 import NotAuthorizedBlock from "../../components/not-authorized";
 import { KEYPOM_CONTRACT_ID, SOCIAL_CONTRACT_ID } from "../../constants";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+
+const APIURL = "https://api.thegraph.com/subgraphs/name/ilerik/near-social";
+const query = `
+  query GetAccount($id: ID!) {
+    accounts(id: $id) {
+      id
+      data
+    }
+  }
+`;
 
 type resultLink = {
   [key: string]: string;
@@ -53,17 +64,44 @@ const ProfilePage: NextPage = () => {
   const [nftsData, setNftsData] = useState<object>({});
 
   const { accountId, selector } = useWalletSelector();
-  console.log('links: ', links)
+  console.log("links: ", links);
 
   useEffect(() => {
     const initProfile = async () => {
       try {
         // TODO fetch user data
-        //const result = await getDocFromFirebase('users', String(accountId));
-        const result = {};
-        setFormState(
-          result ? { ...initialFormState, ...result } : initialFormState
-        );
+        const client = new ApolloClient({
+          uri: APIURL,
+          cache: new InMemoryCache(),
+        });
+        const variables = { id: accountId };
+
+        client
+          .query({
+            query: gql(query),
+            variables,
+          })
+          .then((data) => {
+            console.log("Subgraph data: ", data);
+            const vself = JSON.parse(
+              data.data.accounts.filter(
+                (acc: any) => acc.id == "sergantche.testnet"
+              )[0].data
+            ).data["sergantche.testnet"].vself;
+
+            vself.links = Object.values(vself.links);
+            if (accountId !== "sergantche.testnet") {
+              vself.avatar = vself.avatar_url;
+            }
+            console.log(vself);
+            const result = vself;
+            setFormState(
+              result ? { ...initialFormState, ...result } : initialFormState
+            );
+          })
+          .catch((err) => {
+            console.log("Error fetching data: ", err);
+          });
       } catch (err) {
         setFormState(initialFormState);
       } finally {
@@ -82,22 +120,22 @@ const ProfilePage: NextPage = () => {
       if (!accountId) {
         throw "Invalid ID";
       }
-      
+
       // Save profile data in near social contract
       console.log(avatar);
       const avatar_url =
         "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
-      // TODO Upload image
-      // uploadImageToFirebase(avatar).then((url) => {
-      //   addDocToFirestoreWithName('users', String(accountId), { ...formState, avatar: url });
-      // });
-      // setAnalyticsUserProperties({ avatar: 'changed' });
 
       // Save in blockchain
       const wallet = await selector.wallet();
       const data = {
         [accountId!]: {
-          vself: { avatar_url, name: String(profile.name), bio: String(profile.bio), links: Object.assign({}, links)},
+          vself: {
+            avatar_url,
+            name: String(profile.name),
+            bio: String(profile.bio),
+            links: Object.assign({}, links),
+          },
         },
       };
       console.log(data);
@@ -118,7 +156,7 @@ const ProfilePage: NextPage = () => {
       });
       //setIsSuccess(true);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setIsError(true);
     } finally {
       setIsLoading(false);
@@ -245,9 +283,12 @@ const ProfilePage: NextPage = () => {
         <h2 className="mb-2 font-drukMedium text-black">
           Your changes has been applied
         </h2>
-        <p className="text-[#3D3D3D] mb-4">
-          You can see your changes on your{' '}
-          <a className="underline text-[#019FFF] hover:no-underline" href={`/linktree/${accountId}`}>
+        <p className="mb-4 text-[#3D3D3D]">
+          You can see your changes on your{" "}
+          <a
+            className="text-[#019FFF] underline hover:no-underline"
+            href={`/linktree/${accountId}`}
+          >
             profile page
           </a>
         </p>
