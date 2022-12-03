@@ -2,7 +2,7 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
-import React from 'react';
+import React, { useState } from "react";
 import type { NextPage } from 'next';
 import ProfileComponent from '../../features/profile';
 import LinkList from '../../features/profile/link-list';
@@ -15,6 +15,7 @@ interface LinktreePageProps {
 }
 
 const LinktreePage: NextPage<LinktreePageProps> = ({ profile, nearid }) => {
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const { links, nfts } = profile || {
     links: [],
     nfts: [],
@@ -32,8 +33,17 @@ const LinktreePage: NextPage<LinktreePageProps> = ({ profile, nearid }) => {
               <LinkList links={links} />
             </div>
           </div>
-          <div className="flex flex-col bg-white w-full md:max-w-[66%] rounded-xl p-[20px] md:ml-[20px]">
-            <NftList nfts={nfts} nearid={String(nearid)} />
+          <div className="flex flex-col w-full md:max-w-[66%] rounded-xl p-[20px]">
+            <div className="flex flex-col bg-white w-full rounded-xl p-[20px] md:ml-[20px]">
+              <NftList nfts={nfts} nearid={String(nearid)} />
+            </div>
+            <button
+              onClick={()=>setIsSubscribed(!isSubscribed)}
+              type="button"
+              className="flex self-center text-[16px] font-inter mt-[20px] px-6 py-2.5 bg-white border-[1px] border-[#019FFF] text-[#019FFF] hover:text-white font-medium text-xs leading-tight uppercase rounded-full hover:bg-[#019FFF] focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
+            >
+              {isSubscribed?'Unsubscribe':'Subscribe'}
+            </button>
           </div>
         </div>
       </Loader>

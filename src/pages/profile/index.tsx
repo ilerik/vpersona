@@ -76,7 +76,6 @@ const ProfilePage: NextPage = () => {
   const submitLinkTreeForm = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
-    console.log("Save changes");
     event.preventDefault();
     try {
       setIsLoading(true);
