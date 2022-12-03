@@ -21,8 +21,8 @@ const UploadImageButton: React.FC<UploadImageButtonProps> = ({ onImageSet, file,
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     if (event.target.files && event.target.files.length) {
-      setImgSrc(URL.createObjectURL(event.target.files[0]));
-      onImageSet && onImageSet(event.target.files[0]);
+      setImgSrc(URL.createObjectURL(event.target.files[0]!));
+      onImageSet && onImageSet(event.target.files[0]!);
     }
   };
 

@@ -4,7 +4,8 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useState } from 'react';
 import LinkIcon from '../../components/icons/LinkIcon';
 import TrashIcon from '../../components/icons/TrashIcon';
-import { isValidHttpUrl } from '../../utils';
+import { isEnvProd, isValidHttpUrl } from '../../utils';
+import { checkNearAccount } from '../../utils/near';
 
 interface LinkButtonProps {
   title?: string;
@@ -39,13 +40,26 @@ const LinkButton: React.FC<LinkButtonProps> = ({ title, index, meta, btnCallback
     checkFavIcon();
   }, [meta, setIcon, validateUrl]);
 
-  const linkCallback = () => {
+  const linkCallback = async () => {
+    const network = isEnvProd ? 'mainnet' : 'testnet';
     if (!isEditing && url) {
       const isValid = isValidHttpUrl(url);
       if (!isValid) {
-        typeof window !== 'undefined' && window.open('https://' + url, '_blank')?.focus();
-        return;
+        try {
+          const checkApiResponse = await fetch('/api/check-account?nearid=' + url);
+          const isContractUrl = await checkApiResponse.json();
+          if (!isContractUrl) {
+            typeof window !== 'undefined' && window.open('https://' + url, '_blank')?.focus();
+            return;
+          }
+          typeof window !== 'undefined' &&
+            window.open('https://explorer.' + network + '.near.org/accounts/' + url, '_blank')?.focus();
+          return;
+        } catch (err) {
+          console.log(err);
+        }
       }
+      console.log('link is valid', url);
       typeof window !== 'undefined' && window.open(url, '_blank')?.focus();
       return;
     }

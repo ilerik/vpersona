@@ -78,7 +78,7 @@ const NftLink: React.FC<NftLinkProps> = ({ title, meta, index, isEditing, nearid
                   <div className="flex items-center w-2/3 ml-1">
                     <div>
                       <p className="font-drukMedium text-[14px] text-[#3D3D3D]">{title}</p>
-                      <p className="font-inter mb-2 text-[#3D3D3D] text-[12px] text-[#3D3D3D]">{description}</p>
+                      <p className="font-inter mb-2 text-[12px] text-[#3D3D3D]">{description}</p>
                     </div>
                   </div>
                 </div>
