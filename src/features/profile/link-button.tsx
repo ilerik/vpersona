@@ -25,10 +25,10 @@ const LinkButton: React.FC<LinkButtonProps> = ({ title, index, meta, btnCallback
       const fixedUrl = 'https://' + url;
       const anotherTry = isValidHttpUrl(fixedUrl);
       if (anotherTry) {
-        return fixedUrl;
+        return String(fixedUrl);
       }
     }
-    return url;
+    return String(url);
   }, [url]);
 
   useEffect(() => {

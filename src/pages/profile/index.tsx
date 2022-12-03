@@ -53,6 +53,7 @@ const ProfilePage: NextPage = () => {
   const [nftsData, setNftsData] = useState<object>({});
 
   const { accountId, selector } = useWalletSelector();
+  console.log('links: ', links)
 
   useEffect(() => {
     const initProfile = async () => {
@@ -97,11 +98,11 @@ const ProfilePage: NextPage = () => {
       const wallet = await selector.wallet();
       const data = {
         [accountId!]: {
-          vself: { avatar_url, name: profile.name, bio: profile.bio },
+          vself: { avatar_url, name: String(profile.name), bio: String(profile.bio), links: Object.assign({}, links)},
         },
       };
       console.log(data);
-      wallet.signAndSendTransaction({
+      await wallet.signAndSendTransaction({
         signerId: accountId!,
         receiverId: SOCIAL_CONTRACT_ID,
         actions: [
@@ -118,6 +119,7 @@ const ProfilePage: NextPage = () => {
       });
       //setIsSuccess(true);
     } catch (err) {
+      console.log(err)
       setIsError(true);
     } finally {
       setIsLoading(false);
