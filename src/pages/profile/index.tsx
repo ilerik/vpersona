@@ -45,13 +45,11 @@ const ProfilePage: NextPage = () => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
   const [isLinkEditing, setIsLinkEditing] = useState<boolean>(false);
   const [isNftEdit, setIsNftEdit] = useState<boolean>(false);
   const [linkToEdit, setLinkToEdit] = useState<any>();
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [avatar, setAvatar] = useState<File | null>(null);
-
   const [nftsData, setNftsData] = useState<object>({});
 
   const { accountId, selector } = useWalletSelector();
@@ -84,45 +82,41 @@ const ProfilePage: NextPage = () => {
       if (!accountId) {
         throw "Invalid ID";
       }
-      // Adding new document to Firestore collection of users
-      if (avatar) {
-        console.log(avatar);
-        const avatar_url =
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
-        // TODO Upload image
-        // uploadImageToFirebase(avatar).then((url) => {
-        //   addDocToFirestoreWithName('users', String(accountId), { ...formState, avatar: url });
-        // });
-        // setAnalyticsUserProperties({ avatar: 'changed' });
+      
+      // Save profile data in near social contract
+      console.log(avatar);
+      const avatar_url =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
+      // TODO Upload image
+      // uploadImageToFirebase(avatar).then((url) => {
+      //   addDocToFirestoreWithName('users', String(accountId), { ...formState, avatar: url });
+      // });
+      // setAnalyticsUserProperties({ avatar: 'changed' });
 
-        // Save in blockchain
-        const wallet = await selector.wallet();
-        const data = {
-          [accountId!]: {
-            vself: { avatar_url },
-          },
-        };
-        console.log(data);
-        wallet.signAndSendTransaction({
-          signerId: accountId!,
-          receiverId: SOCIAL_CONTRACT_ID,
-          actions: [
-            {
-              type: "FunctionCall",
-              params: {
-                methodName: "set",
-                args: { data },
-                gas: "30000000000000",
-                deposit: "100000000000000000000000",
-              },
+      // Save in blockchain
+      const wallet = await selector.wallet();
+      const data = {
+        [accountId!]: {
+          vself: { avatar_url, name: profile.name, bio: profile.bio },
+        },
+      };
+      console.log(data);
+      wallet.signAndSendTransaction({
+        signerId: accountId!,
+        receiverId: SOCIAL_CONTRACT_ID,
+        actions: [
+          {
+            type: "FunctionCall",
+            params: {
+              methodName: "set",
+              args: { data },
+              gas: "30000000000000",
+              deposit: "100000000000000000000000",
             },
-          ],
-        });
-        return;
-      }
-      // TODO write updated user data
-      //addDocToFirestoreWithName('users', String(accountId), formState);
-      setIsSuccess(true);
+          },
+        ],
+      });
+      //setIsSuccess(true);
     } catch (err) {
       setIsError(true);
     } finally {
