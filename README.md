@@ -1,3 +1,7 @@
+# MVP Deployment
+
+1. Subgraph for Near.Social https://thegraph.com/hosted-service/subgraph/ilerik/near-social
+
 # Create T3 App
 
 This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.

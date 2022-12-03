@@ -84,10 +84,9 @@ const ProfilePage: NextPage = () => {
           .then((data) => {
             console.log("Subgraph data: ", data);
             const vself = JSON.parse(
-              data.data.accounts.filter(
-                (acc: any) => acc.id == "sergantche.testnet"
-              )[0].data
-            ).data["sergantche.testnet"].vself;
+              data.data.accounts.filter((acc: any) => acc.id == accountId)[0]
+                .data
+            ).data[accountId!].vself;
 
             vself.links = Object.values(vself.links);
             if (accountId !== "sergantche.testnet") {
