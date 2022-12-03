@@ -114,7 +114,6 @@ const ProfilePage: NextPage = () => {
   };
 
   const handleNewLink = (link: resultLink) => {
-    console.log('Hello');
     if (isNftEdit) {
       let newNftsArray = [...nfts];
       const checkedNFTSLinksArray = newNftsArray.filter((el) => el.title == link.title);
@@ -208,12 +207,12 @@ const ProfilePage: NextPage = () => {
       </Modal>
       <Modal isOpened={isSuccess} closeCallback={closeModal}>
         <h2 className="font-drukMedium text-black mb-2">Your changes has been applied</h2>
-        <p className="text-[#3D3D3D] mb-4">
+        {/* <p className="text-[#3D3D3D] mb-4">
           You can see your changes on your{' '}
           <a className="underline text-[#019FFF] hover:no-underline" href={`/linktree/${accountId}`}>
             profile page
           </a>
-        </p>
+        </p> */}
       </Modal>
       <Modal isOpened={isError} isError={isError} closeCallback={closeModal}>
         <ErrorCreateMessage />

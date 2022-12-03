@@ -17,6 +17,8 @@ interface NftLinkProps {
 
 const NftLink: React.FC<NftLinkProps> = ({ title, meta, index, isEditing, nearid, url, btnCallback, rmvCallback }) => {
   const [nftImgs, setNftImgs] = useState<any>(null);
+
+  // Fetch nfts data
   useEffect(() => {
     const initLink = async () => {
       try {
@@ -31,6 +33,7 @@ const NftLink: React.FC<NftLinkProps> = ({ title, meta, index, isEditing, nearid
           contract_name = url;
           imgs = await getState(contract_name, String(nearid));
         }
+        console.log({imgs});
         setNftImgs(imgs);
       } catch (err) {
         setNftImgs(null);

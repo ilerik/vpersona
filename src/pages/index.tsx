@@ -71,9 +71,7 @@ const Home: NextPage = () => {
         {
           type: "FunctionCall",
           params: {
-            //methodName: "addMessage",
             methodName: "get_key_total_supply",
-            //args: { text: "Hello World!" },
             args: {},
             gas: "30000000000000",
             deposit: "10000000000000000000000",
