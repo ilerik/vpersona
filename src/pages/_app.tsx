@@ -7,6 +7,7 @@ import { trpc } from "../utils/trpc";
 import "../styles/globals.css";
 import "@near-wallet-selector/modal-ui/styles.css";
 import { WalletSelectorContextProvider } from "../contexts/WalletSelectorContext";
+import Header from "../components/header";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -15,7 +16,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <WalletSelectorContextProvider>
       <SessionProvider session={session}>
-        <Component {...pageProps} />
+        <div className="font-druk bg-[url(/mission_bg.png)] bg-cover bg-fixed bg-no-repeat text-gray-900 dark:text-white">
+          <Header />
+          <Component {...pageProps} />
+          {/* <Footer /> */}
+        </div>
       </SessionProvider>
     </WalletSelectorContextProvider>
   );

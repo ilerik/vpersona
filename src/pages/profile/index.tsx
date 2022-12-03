@@ -2,23 +2,23 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
+import React, { useState, useEffect } from "react";
+import type { NextPage } from "next";
 // import {
 //   addDocToFirestoreWithName,
 //   getDocFromFirebase,
 //   // setAnalyticsUserProperties,
 //   uploadImageToFirebase,
 // } from '../../utils/firebase';
-import Modal from '../../components/modal';
-import LinkEditor from '../../features/profile/link-editor';
-import NftList from '../../features/profile/nft-list';
-import LinkList from '../../features/profile/link-list';
-import ProfileComponent from '../../features/profile';
-import { useWalletSelector } from '../../contexts/WalletSelectorContext';
-import ErrorCreateMessage from '../../features/event-form/error-create';
-import Loader from '../../components/loader';
-import NotAuthorizedBlock from '../../components/not-authorized';
+import Modal from "../../components/modal";
+import LinkEditor from "../../features/profile/link-editor";
+import NftList from "../../features/profile/nft-list";
+import LinkList from "../../features/profile/link-list";
+import ProfileComponent from "../../features/profile";
+import { useWalletSelector } from "../../contexts/WalletSelectorContext";
+import ErrorCreateMessage from "../../features/event-form/error-create";
+import Loader from "../../components/loader";
+import NotAuthorizedBlock from "../../components/not-authorized";
 import { KEYPOM_CONTRACT_ID, SOCIAL_CONTRACT_ID } from "../../constants";
 
 type resultLink = {
@@ -33,8 +33,8 @@ interface formState {
 }
 
 const initialFormState = {
-  name: '',
-  bio: '',
+  name: "",
+  bio: "",
   links: [],
   nfts: [],
 };
@@ -62,7 +62,9 @@ const ProfilePage: NextPage = () => {
         // TODO fetch user data
         //const result = await getDocFromFirebase('users', String(accountId));
         const result = {};
-        setFormState(result ? { ...initialFormState, ...result } : initialFormState);
+        setFormState(
+          result ? { ...initialFormState, ...result } : initialFormState
+        );
       } catch (err) {
         setFormState(initialFormState);
       } finally {
@@ -72,18 +74,21 @@ const ProfilePage: NextPage = () => {
     initProfile();
   }, [accountId]);
 
-  const submitLinkTreeForm = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const submitLinkTreeForm = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     console.log("Save changes");
     event.preventDefault();
     try {
       setIsLoading(true);
       if (!accountId) {
-        throw 'Invalid ID';
+        throw "Invalid ID";
       }
       // Adding new document to Firestore collection of users
       if (avatar) {
         console.log(avatar);
-        const avatar_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
+        const avatar_url =
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
         // TODO Upload image
         // uploadImageToFirebase(avatar).then((url) => {
         //   addDocToFirestoreWithName('users', String(accountId), { ...formState, avatar: url });
@@ -92,9 +97,11 @@ const ProfilePage: NextPage = () => {
 
         // Save in blockchain
         const wallet = await selector.wallet();
-        const data = { [accountId!]: {
-          vself: {avatar_url}
-        } };
+        const data = {
+          [accountId!]: {
+            vself: { avatar_url },
+          },
+        };
         console.log(data);
         wallet.signAndSendTransaction({
           signerId: accountId!,
@@ -144,9 +151,11 @@ const ProfilePage: NextPage = () => {
   const handleNewLink = (link: resultLink) => {
     if (isNftEdit) {
       let newNftsArray = [...nfts];
-      const checkedNFTSLinksArray = newNftsArray.filter((el) => el.title == link.title);
+      const checkedNFTSLinksArray = newNftsArray.filter(
+        (el) => el.title == link.title
+      );
       if (checkedNFTSLinksArray.length && !linkToEdit) {
-        throw 'already exist';
+        throw "already exist";
       }
       newNftsArray = [...nfts, link];
       setIsLinkEditing(false);
@@ -154,9 +163,11 @@ const ProfilePage: NextPage = () => {
       setFormState({ ...formState, nfts: newNftsArray });
     } else {
       let newLinksArray = [...links];
-      const checkedLinksArray = newLinksArray.filter((el) => el.title == link.title);
+      const checkedLinksArray = newLinksArray.filter(
+        (el) => el.title == link.title
+      );
       if (checkedLinksArray.length && !linkToEdit) {
-        throw 'already exist';
+        throw "already exist";
       }
       if (activeIndex > -1) {
         newLinksArray[activeIndex] = link;
@@ -201,7 +212,9 @@ const ProfilePage: NextPage = () => {
     setFormState({ ...formState, [key]: value });
   };
 
-  const handleTextareaChange = (event: React.FormEvent<HTMLTextAreaElement>): void => {
+  const handleTextareaChange = (
+    event: React.FormEvent<HTMLTextAreaElement>
+  ): void => {
     const value = event.currentTarget.value;
     const key = event.currentTarget.name;
     setFormState({ ...formState, [key]: value });
@@ -213,9 +226,9 @@ const ProfilePage: NextPage = () => {
 
   if (!accountId) {
     return (
-      <div className="flex justify-center min-h-screen items-center p-[20px]">
-        <div className="w-full max-w-[1240px] px-[20px] py-[40px] bg-white rounded-xl">
-          <div className="w-full max-w-[1080px] mx-auto">
+      <div className="flex min-h-screen items-center justify-center p-[20px]">
+        <div className="w-full max-w-[1240px] rounded-xl bg-white px-[20px] py-[40px]">
+          <div className="mx-auto w-full max-w-[1080px]">
             <NotAuthorizedBlock />
           </div>
         </div>
@@ -234,7 +247,9 @@ const ProfilePage: NextPage = () => {
         />
       </Modal>
       <Modal isOpened={isSuccess} closeCallback={closeModal}>
-        <h2 className="font-drukMedium text-black mb-2">Your changes has been applied</h2>
+        <h2 className="mb-2 font-drukMedium text-black">
+          Your changes has been applied
+        </h2>
         {/* <p className="text-[#3D3D3D] mb-4">
           You can see your changes on your{' '}
           <a className="underline text-[#019FFF] hover:no-underline" href={`/linktree/${accountId}`}>
@@ -245,14 +260,14 @@ const ProfilePage: NextPage = () => {
       <Modal isOpened={isError} isError={isError} closeCallback={closeModal}>
         <ErrorCreateMessage />
       </Modal>
-      <div className="flex justify-center min-h-screen items-center pt-[125px]">
+      <div className="flex min-h-screen items-center justify-center pt-[125px]">
         <Loader is_load={isLoading}>
           <form
             onSubmit={submitLinkTreeForm}
-            className="flex flex-col items-baseline md:flex-row max-w-[1240px] my-[20px] px-[20px]"
+            className="my-[20px] flex w-full max-w-[1240px] flex-col  items-baseline px-[20px] md:flex-row"
           >
-            <div className="flex flex-col items-center w-full md:w-1/3 bg-[#019FFF] rounded-[20px] ">
-              <div className="p-[20px] flex w-full flex-col mb-[20px]">
+            <div className="flex w-full flex-col items-center rounded-[20px] bg-[#019FFF] md:w-1/3 ">
+              <div className="mb-[20px] flex w-full flex-col py-[30px] px-[40px]">
                 <ProfileComponent
                   isEditing={true}
                   profile={profile}
@@ -262,7 +277,7 @@ const ProfilePage: NextPage = () => {
                   handleImgChange={handleImgChange}
                 />
               </div>
-              <div className="bg-[#293FC2] rounded-[20px] p-[20px] flex w-full flex-col relative">
+              <div className="relative flex w-full flex-col rounded-[20px] bg-[#293FC2] py-[30px] px-[40px]">
                 <LinkList
                   addBtnCallback={openModal}
                   links={links}
@@ -273,7 +288,7 @@ const ProfilePage: NextPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col items-center bg-white w-full md:w-2/3 rounded-xl p-[20px] md:ml-[20px]">
+            <div className="flex w-full flex-col items-center rounded-xl bg-white py-[30px] px-[40px] md:ml-[20px] md:w-2/3">
               <NftList
                 nfts={nfts}
                 btnCallback={selectNftLinkToEdit}
