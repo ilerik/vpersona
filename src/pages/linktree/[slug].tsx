@@ -129,7 +129,7 @@ const LinktreePage: NextPage<LinktreePageProps> = ({ profile, nearid }) => {
         console.log(`${accountId} is not subscribe on ${nearid}`);
         return;
       }
-      let newSubs = Object.values(signedInProfile.subscriptions);
+      const newSubs = Object.values(signedInProfile.subscriptions);
       newSubs.splice(index, 1); // remove subscription on `nearid`
 
       // Form data
