@@ -84,9 +84,6 @@ LinktreePage.getInitialProps = async ({ query }) => {
       ).data[nearid!].vself;
 
       vself.links = Object.values(vself.links);
-      if (nearid !== "sergantche.testnet") {
-        vself.avatar = vself.avatar_url;
-      }
       console.log(vself);
       return vself;
     })
