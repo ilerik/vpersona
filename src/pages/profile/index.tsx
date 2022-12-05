@@ -22,6 +22,9 @@ import NotAuthorizedBlock from "../../components/not-authorized";
 import { KEYPOM_CONTRACT_ID, SOCIAL_CONTRACT_ID } from "../../constants";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
+import { create } from "ipfs-core";
+import { uploadImageToFirebase } from "../../utils/firebase";
+
 const APIURL = "https://api.thegraph.com/subgraphs/name/ilerik/near-social";
 const query = `
   query GetAccount($id: ID!) {
@@ -89,10 +92,6 @@ const ProfilePage: NextPage = () => {
             ).data[accountId!].vself;
 
             vself.links = Object.values(vself.links);
-            if (accountId !== "sergantche.testnet") {
-              vself.avatar = vself.avatar_url;
-            }
-            console.log(vself);
             const result = vself;
             setFormState(
               result ? { ...initialFormState, ...result } : initialFormState
@@ -121,9 +120,10 @@ const ProfilePage: NextPage = () => {
       }
 
       // Save profile data in near social contract
-      console.log(avatar);
-      const avatar_url =
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
+      let avatar_url = "";
+      if (avatar) {
+        avatar_url = String(await uploadImageToFirebase(avatar));
+      }
 
       // Save in blockchain
       const wallet = await selector.wallet();
@@ -153,6 +153,7 @@ const ProfilePage: NextPage = () => {
           },
         ],
       });
+
       //setIsSuccess(true);
     } catch (err) {
       console.log(err);
