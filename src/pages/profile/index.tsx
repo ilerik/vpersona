@@ -19,7 +19,7 @@ import { useWalletSelector } from "../../contexts/WalletSelectorContext";
 import ErrorCreateMessage from "../../features/event-form/error-create";
 import Loader from "../../components/loader";
 import NotAuthorizedBlock from "../../components/not-authorized";
-import { KEYPOM_CONTRACT_ID, SOCIAL_CONTRACT_ID } from "../../constants";
+import { SOCIAL_CONTRACT_ID } from "../../constants";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
 const APIURL = "https://api.thegraph.com/subgraphs/name/ilerik/near-social";
@@ -41,6 +41,7 @@ interface formState {
   bio: string;
   links: any[];
   nfts: any[];
+  subscriptions: any[]
 }
 
 const initialFormState = {
@@ -48,6 +49,7 @@ const initialFormState = {
   bio: "",
   links: [],
   nfts: [],
+  subscriptions: []
 };
 
 const ProfilePage: NextPage = () => {
@@ -66,41 +68,34 @@ const ProfilePage: NextPage = () => {
   const { accountId, selector } = useWalletSelector();
   console.log("links: ", links);
 
+  // Fetch user data
   useEffect(() => {
     const initProfile = async () => {
       try {
-        // TODO fetch user data
         const client = new ApolloClient({
           uri: APIURL,
           cache: new InMemoryCache(),
         });
         const variables = { id: accountId };
-
-        client
-          .query({
-            query: gql(query),
-            variables,
-          })
-          .then((data) => {
-            console.log("Subgraph data: ", data);
-            const vself = JSON.parse(
-              data.data.accounts.filter((acc: any) => acc.id == accountId)[0]
-                .data
-            ).data[accountId!].vself;
-
-            vself.links = Object.values(vself.links);
-            if (accountId !== "sergantche.testnet") {
-              vself.avatar = vself.avatar_url;
-            }
-            console.log(vself);
-            const result = vself;
-            setFormState(
-              result ? { ...initialFormState, ...result } : initialFormState
-            );
-          })
-          .catch((err) => {
-            console.log("Error fetching data: ", err);
-          });
+        try {
+          const { data } = await client.query({ query: gql(query), variables });
+          const vself = JSON.parse(
+            data.accounts.filter((acc: any) => acc.id == accountId)[0]
+              .data
+          ).data[accountId!].vself;
+          console.log(vself);
+  
+          vself.links = Object.values(vself.links);
+          if (accountId !== "sergantche.testnet") {
+            vself.avatar = vself.avatar_url;
+          }
+          const result = vself;
+          setFormState(
+            result ? { ...initialFormState, ...result } : initialFormState
+          );
+        } catch (err) {
+          console.log("Error fetching data: ", err);
+        }
       } catch (err) {
         setFormState(initialFormState);
       } finally {
@@ -125,7 +120,7 @@ const ProfilePage: NextPage = () => {
       const avatar_url =
         "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/800px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg";
 
-      // Save in blockchain
+      // Save data in the smart contract
       const wallet = await selector.wallet();
       const data = {
         [accountId!]: {
@@ -134,10 +129,11 @@ const ProfilePage: NextPage = () => {
             name: String(profile.name),
             bio: String(profile.bio),
             links: Object.assign({}, links),
+            subscriptions: Object.assign({}, formState.subscriptions)
           },
         },
       };
-      console.log(data);
+
       await wallet.signAndSendTransaction({
         signerId: accountId!,
         receiverId: SOCIAL_CONTRACT_ID,
@@ -339,12 +335,5 @@ const ProfilePage: NextPage = () => {
     </>
   );
 };
-
-// ProfilePage.getInitialProps = async (...ctx) => {
-//   console.log('ctx: ', ctx);
-//   return {
-//     test: 'test',
-//   };
-// };
 
 export default ProfilePage;
