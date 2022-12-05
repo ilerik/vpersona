@@ -48,11 +48,15 @@ const Header: React.FC = () => {
     try {
       modal.show();
       setTimeout(() => {
-        const middleBtn: any = document.querySelector(".middleButton");
-        middleBtn.onclick = () => {
-          modal.hide();
-          router.push("/onboard");
-        };
+        try {
+          const middleBtn: any = document.querySelector(".middleButton");
+          middleBtn.onclick = () => {
+            modal.hide();
+            router.push("/onboard");
+          };
+        } catch (err) {
+          console.log(err);
+        }
       }, 0);
     } catch (err) {
       console.log(err);
